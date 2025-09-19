@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     logger.info("Connecting to DB...")
     await database.connect()
-    logger.info("DB connected!")
+    logger.info("DB connected")
     yield
     await database.disconnect()
     logger.info("DB disconnected!")
