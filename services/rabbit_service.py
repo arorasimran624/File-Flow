@@ -3,11 +3,11 @@ import aio_pika
 from dotenv import load_dotenv
 import json
 
-
 load_dotenv()
 
 RABBITMQ_URL = os.getenv("RABBITMQ_URL")
 QUEUE_NAME=os.getenv("QUEUE_NAME")
+
 async def test_rabbitmq():
     """Test RabbitMQ connectivity"""
     try:
@@ -24,6 +24,7 @@ async def test_rabbitmq():
         return f"RabbitMQ test failed : {e}"
 
 async def publish_to_queue(message: dict, queue_name: str):
+    """Publish a JSON-encoded message to the specified RabbitMQ queue."""
     connection = await aio_pika.connect_robust(RABBITMQ_URL)
     async with connection:
         channel = await connection.channel()
@@ -32,4 +33,3 @@ async def publish_to_queue(message: dict, queue_name: str):
             aio_pika.Message(body=json.dumps(message).encode()),
             routing_key=queue.name
         )
-    print(f"Message published to queue '{queue_name}'")

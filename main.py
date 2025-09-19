@@ -4,17 +4,26 @@ from services.rabbit_service import test_rabbitmq
 from services.teams_services import send_teams_message
 from routes.file_routes import files
 from contextlib import asynccontextmanager
+import logging
+
+# Basic configuration
+logging.basicConfig(
+    level=logging.INFO,                    
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+)
+
+logger = logging.getLogger(__name__)
 
 
 #TODO: Always use logs NO PRINTS
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("Connecting to DB...")
+    logger.info("Connecting to DB...")
     await database.connect()
-    print("DB connected!")
+    logger.info("DB connected!")
     yield
     await database.disconnect()
-    print("DB disconnected!")
+    logger.info("DB disconnected!")
 
 app = FastAPI(title="FileFlow API",lifespan=lifespan)
 
@@ -33,5 +42,5 @@ def test_teams(message: str = "Hello from FastAPI!"):
     result = send_teams_message(message)
     return {"teams": result}
 
-app.include_router(files, prefix="/files", tags=["Files"])
+app.include_router(files, tags=["Files"])
 

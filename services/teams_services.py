@@ -5,6 +5,8 @@ import os
 TEAMS_WEBHOOK_URL = os.getenv("TEAMS_WEBHOOK_URL")
 
 def send_teams_message(file_id: str, status: str, errors: dict = None) -> str:
+    """Send a formatted notification message to a Microsoft Teams channel via webhook."""
+
     if not TEAMS_WEBHOOK_URL:
         return "TEAMS_WEBHOOK_URL not configured "
 

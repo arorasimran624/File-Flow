@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 QUEUE_SECOND = os.getenv("QUEUE_SECOND")
 
 async def process_file(file_id: str, file_content: str) -> dict:
+    """Process a single uploaded CSV file."""
     result = {"file_id": file_id, "status": "success", "errors": {}}
     try:
         df = pd.read_csv(io.StringIO(file_content),dtype={"contact_no": str},keep_default_na=False)
@@ -89,3 +90,16 @@ async def process_file(file_id: str, file_content: str) -> dict:
     except Exception as e:
         return {"file_id": file_id, "status": "error", "message": str(e)}
 
+
+def compute_file_stats(total: int, passed: int, failed: int):
+    """ Compute overall file validation statistics."""
+    passed_percent = round((passed / total) * 100, 2) if total else 0
+    failed_percent = round((failed / total) * 100, 2) if total else 0
+    
+    return {
+        "total_files": total,
+        "passed": passed,
+        "failed": failed,
+        "passed_percent": passed_percent,
+        "failed_percent": failed_percent
+    }

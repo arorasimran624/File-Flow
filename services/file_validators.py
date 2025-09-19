@@ -9,6 +9,10 @@ from dateutil.parser import parse
 EMAIL_REGEX = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$") 
 
 def validate_template(df: pd.DataFrame) -> dict:
+    """
+    Validate that the DataFrame matches the expected template.
+    Checks for missing columns, extra columns, and column order mismatches.
+    """
     found_columns = list(df.columns)
     missing = [col for col in EXPECTED_COLUMNS if col not in found_columns]
     extra = [col for col in found_columns if col not in EXPECTED_COLUMNS]
@@ -27,6 +31,11 @@ def validate_template(df: pd.DataFrame) -> dict:
     return {"status": "success"}
 
 def validate_nulls(df: pd.DataFrame) -> dict:
+    """
+    Validate that no required fields in the DataFrame are null or empty.
+    
+    Returns failed rows with the columns that are null/empty.
+    """
     null_rows = []
     for idx, row in df.iterrows():
         row_null_cols = [col for col in df.columns if pd.isna(row[col]) or str(row[col]).strip() == ""]
@@ -41,6 +50,14 @@ def validate_nulls(df: pd.DataFrame) -> dict:
     return {"status": "success", "details": {"null_error": []}}
 
 def validate_data_types(df: pd.DataFrame) -> dict:
+    """
+    Validate the data types and formats of certain columns in the DataFrame.
+    
+    Checks:
+    - phone numbers are 10 digits
+    - datetime follows MM-DD-YYYY
+    - emails follow a valid email format
+    """
     errors = {"email_error": [], "phone_error": [], "dob_error": []}
     for idx, row in df.iterrows():
         if row.isna().all():
