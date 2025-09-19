@@ -1,0 +1,58 @@
+version: "3.9"
+
+services:
+  api-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api_server
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+    ports:
+      - "8000:8000"
+    env_file: .env
+    depends_on:
+      - rabbitmq
+      - postgres
+    networks:
+      - app_net
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: worker
+    command: ["python", "-m", "services.worker"]
+    env_file: .env
+    depends_on:
+      - rabbitmq
+      - postgres
+    networks:
+      - app_net
+
+  postgres:
+    image: postgres:16
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: filesdb
+    ports:
+      - "5433:5432"
+    networks:
+      - app_net
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - app_net
+
+networks:
+  app_net:
+    driver: bridge
