@@ -8,9 +8,9 @@ Upload or send a CSV file to the system.
 2.Processing & Validation
 Template Check: It detects if any columns are missing, extra, or in the wrong order.
 Null Check: It also flags rows with empty or missing values.
-Row Validation: It Validates fields such as
-  Contact number must be of 10 digits
-  Email format must contain @
+Row Validation: It validates fields such as
+  Contact number must be of 10 digits,
+  Email format must contain @,
   Date of Birth valid date format
 
 3.Status Update
